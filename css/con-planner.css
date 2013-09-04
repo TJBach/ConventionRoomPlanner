@@ -1,0 +1,46 @@
+.planner{
+    padding-top: 10px;
+}
+
+.room{
+    width: 200px;
+    float: left;
+    margin-right: 10px;
+}
+
+.event{
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.event:hover {
+    background-color: lightyellow;
+    border-radius: 10px;
+}
+
+.spacer{
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
+}
+
+.times{
+    float: left;
+    width: 120px;
+    margin-right: 10px;
+    padding-top: 46px;
+}
+
+.time{
+    height: 50px;
+    text-align: right;
+}
+
+.open-block{
+    border-bottom: 1px dotted #d3d3d3;
+    height: 50px;
+}
+
+.open-block:hover {
+    background-color: lightskyblue;
+    border-radius: 10px;
+}
