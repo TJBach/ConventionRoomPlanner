@@ -15,7 +15,7 @@ module.exports = function(grunt) {
                         dest: 'build/prod/js/lib.<%= hash %>.js'
                     },
                     {
-                        src: ['lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css', 'lib/bootstrap/css/bootstrap.min.css', "lib/bootstrap/css/bootstrap-theme.min.css"],
+                        src: ['lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css', 'build/stage/css/bootstrap.min.css', "build/stage/css/bootstrap-theme.min.css"],
                         dest: 'build/prod/css/lib.<%= hash %>.css'
                     }
                 ]
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
                     {src: ['app/**/*.js', '!app/main.js'], dest: 'build/dev/js/application.<%= hash %>.js'},
                     {src: ['app/main.js'], dest: 'build/dev/js/main.<%= hash %>.js'},
                     {
-                        src: ['lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.css', 'lib/bootstrap/css/bootstrap.css', "lib/bootstrap/css/bootstrap-theme.css"],
+                        src: ['lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.css', 'build/stage/css/bootstrap.css', "build/stage/css/bootstrap-theme.css"],
                         dest: 'build/dev/css/lib.<%= hash %>.css'
                     }
                 ]
@@ -46,6 +46,20 @@ module.exports = function(grunt) {
                 ]
             }
         },
+        copy: {
+            prod: {
+                files: [
+                    { src: 'lib/bootstrap/fonts/*', dest: 'build/prod/fonts/', expand: true, flatten: true },
+                    { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/prod/images/', expand: true, flatten: true }
+                ]
+            },
+            dev: {
+                files: [
+                    { src: 'lib/bootstrap/fonts/*', dest: 'build/dev/fonts/', expand: true, flatten: true },
+                    { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/dev/images/', expand: true, flatten: true }
+                ]
+            }
+        },
         less: {
             prod: {
                 options: {
@@ -53,8 +67,8 @@ module.exports = function(grunt) {
                     yuicompress: true
                 },
                 files: [
-                    {src: ["lib/bootstrap/less/bootstrap.less"], dest: "lib/bootstrap/css/bootstrap.min.css"},
-                    {src: ["lib/bootstrap/less/theme.less"], dest: "lib/bootstrap/css/bootstrap-theme.min.css"},
+                    {src: ["lib/bootstrap/less/bootstrap.less"], dest: "build/stage/css/bootstrap.min.css"},
+                    {src: ["lib/bootstrap/less/theme.less"], dest: "build/stage/css/bootstrap-theme.min.css"},
                     {src: ["css/con-planner.less"], dest: "build/prod/css/app.<%= hash %>.css"}
                 ]
             },
@@ -63,8 +77,8 @@ module.exports = function(grunt) {
                     paths: ["lib/bootstrap/less", "css"]
                 },
                 files: [
-                    {src: ["lib/bootstrap/less/bootstrap.less"], dest: "lib/bootstrap/css/bootstrap.css"},
-                    {src: ["lib/bootstrap/less/theme.less"], dest: "lib/bootstrap/css/bootstrap-theme.css"},
+                    {src: ["lib/bootstrap/less/bootstrap.less"], dest: "build/stage/css/bootstrap.css"},
+                    {src: ["lib/bootstrap/less/theme.less"], dest: "build/stage/css/bootstrap-theme.css"},
                     {src: ["css/con-planner.less"], dest: "build/dev/css/app.<%= hash %>.css"}
                 ]
             }
@@ -75,6 +89,9 @@ module.exports = function(grunt) {
             },
             dev: {
                 src: ["build/dev"]
+            },
+            stage:{
+                src: ["build/stage"]
             }
         },
         env : {
@@ -114,8 +131,8 @@ module.exports = function(grunt) {
         .forEach( grunt.loadNpmTasks );
 
     // Default task(s).
-    grunt.registerTask('default', ['env', 'clean', 'less', 'concat', 'uglify', 'preprocess', 'watch']);
-    grunt.registerTask('dev', ['env:dev', 'clean:dev', 'less:dev', 'concat:dev', 'preprocess:dev']);
-    grunt.registerTask('prod', ['env:prod', 'clean:prod', 'less:prod', 'concat:prod', 'uglify:prod', 'preprocess:prod']);
+    grunt.registerTask('default', ['env', 'clean', 'less', 'concat', 'uglify', 'copy', 'preprocess', 'clean:stage']);
+    grunt.registerTask('dev', ['env:dev', 'clean:dev', 'less:dev', 'concat:dev', 'copy:dev', 'preprocess:dev', 'clean:stage']);
+    grunt.registerTask('prod', ['env:prod', 'clean:prod', 'less:prod', 'concat:prod', 'uglify:prod', 'copy:prod', 'preprocess:prod', 'clean:stage']);
 
 };
