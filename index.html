@@ -39,8 +39,6 @@
                 </div>
             </div>
 
-
-
             <div data-bind="foreach: rooms">
                 <div class="panel panel-default room">
                     <div class="panel-heading">
@@ -52,6 +50,29 @@
             </div>
 
         </div>
+
+        <table>
+            <thead class="planner-header">
+            <tr>
+                <th class="time-heading">Time</th>
+                <!-- ko foreach: rooms -->
+                <th class="room-heading">
+                    <span data-bind="text: name()"></span>
+                </th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: timeList">
+            <tr>
+                <td class="time">
+                    <label data-bind="text: $data"></label>
+                </td>
+                <!-- ko foreach: $root.rooms -->
+                <td class="open-block"></td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
 
         <script type="text/html" id="event-template">
             <div class="event" data-bind="style: { height: height }">
