@@ -28,11 +28,18 @@
 
         <div class="planner clearfix" data-bind="style: { width: planerWidth }">
 
-            <div class="times" data-bind="foreach: timeList, style: { height: timebarHeight }">
-                <div class="time">
-                    <label data-bind="text: $data"></label>
+            <div class="panel panel-default times">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Time</h3>
+                </div>
+                <div class="panel-body times" data-bind="foreach: timeList, style: { height: timebarHeight }">
+                    <div class="time">
+                        <label data-bind="text: $data"></label>
+                    </div>
                 </div>
             </div>
+
+
 
             <div data-bind="foreach: rooms">
                 <div class="panel panel-default room">
