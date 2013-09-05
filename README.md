@@ -13,11 +13,13 @@ This project is an excuse to mess with these things for the first time.
 Requirements
 -------------------------
 [node](http://nodejs.org/), Greater than 0.8 required for grunt.
+
 [grunt](http://gruntjs.com/),  Once node is installed run the command `npm install -g grunt-cli`
 
 Setup
 -------------------------
 run `npm install`
+
 run `grunt` to build
 
 Tasks
