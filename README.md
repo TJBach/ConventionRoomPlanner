@@ -6,8 +6,11 @@ Web application to assist in planning time slots for rooms at a convention.
 Currently this is just the start of a POC.
 
 This project is an excuse to mess with these things for the first time.
+
 -knockout
+
 -grunt
+
 -less
 
 Requirements:
@@ -21,5 +24,7 @@ run 'npm install'
 run 'grunt' to build
 
 -'grunt dev' builds without minification
+
 -'grunt prod' builds with minification
+
 -'grunt watch' will watch the css and js files and rebuild dev when they change.
