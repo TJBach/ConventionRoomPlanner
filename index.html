@@ -19,67 +19,59 @@
             </div>
         </div>
 
-        <label>Start Date:</label>
-        <input data-bind="datepicker: startDate" />
-        <label>End Date:</label>
-        <input data-bind="datepicker: endDate" />
+        <label>Show from </label>
+        <input data-bind="datepicker: startTime" />
+        <label> to </label>
+        <input data-bind="datepicker: endTime" />
 
         <h3>Events Registared: <span data-bind="text: totalEvents()"></span></h3>
 
         <div class="planner clearfix" data-bind="style: { width: planerWidth }">
 
-            <div class="panel panel-default times">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Time</h3>
-                </div>
-                <div class="panel-body times" data-bind="foreach: timeList, style: { height: timebarHeight }">
-                    <div class="time">
-                        <label data-bind="text: $data"></label>
-                    </div>
-                </div>
-            </div>
-
-            <div data-bind="foreach: rooms">
-                <div class="panel panel-default room">
+            <div data-bind="template: { name: displayMode, foreach: columns }">
+                <div data-bind="attr: { class: 'panel panel-default ' + class }">
                     <div class="panel-heading">
                         <h3 class="panel-title" data-bind="text: name()"></h3>
                     </div>
-                    <div class="panel-body" data-bind="template: { name: displayMode, foreach: eventColumn }">
+                    <div data-bind="attr: { class: 'panel-body ' + class }, template: { name: template, foreach: rows }">
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <table>
-            <thead class="planner-header">
-            <tr>
-                <th class="time-heading">Time</th>
-                <!-- ko foreach: rooms -->
-                <th class="room-heading">
-                    <span data-bind="text: name()"></span>
-                </th>
-                <!-- /ko -->
-            </tr>
-            </thead>
-            <tbody data-bind="foreach: timeList">
-            <tr>
-                <td class="time">
-                    <label data-bind="text: $data"></label>
-                </td>
-                <!-- ko foreach: $root.rooms -->
-                <td class="open-block"></td>
-                <!-- /ko -->
-            </tr>
-            </tbody>
-        </table>
+        <script type="text/html" id="time-template">
+            <div class="panel panel-default times">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Time</h3>
+                </div>
+                <div class="panel-body times" data-bind="foreach: rows">
+                    <div class="time" data-bind="style: { height: height }">
+                        <label data-bind="text: dateText"></label>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/html" id="room-template">
+            <div class="panel panel-default room">
+                <div class="panel-heading">
+                    <h3 class="panel-title" data-bind="text: name()"></h3>
+                </div>
+                <div class="room-container" data-bind="template: { name: 'event-template', foreach: events }"></div>
+                <div class="panel-body cell-container" data-bind="foreach: rows">
+                    <div class="cell" data-bind="style: { height: height }">
+                        <div class="open-block"></div>
+                    </div>
+                </div>
+            </div>
+        </script>
 
         <script type="text/html" id="event-template">
-            <div class="event" data-bind="style: { height: height }">
-                <ul data-bind="style: { height: height }">
+            <div class="event" data-bind="style: { height: height, width: width, top: position, marginLeft: margin }">
+                <ul class="list-unstyled" data-bind="style: { height: height }">
                     <li>
-                        <label>Name:</label>
-                        <span data-bind="text: name()"></span>
+                        <label data-bind="text: name()">Name:</label>
                     </li>
                 </ul>
             </div>
