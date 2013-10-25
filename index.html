@@ -24,6 +24,8 @@
         <label> to </label>
         <input data-bind="datepicker: endTime" />
 
+        <a href="#" class="btn btn-primary" data-bind="click: promptForNewRoom">Add Room</a>
+
         <h3>Events Registared: <span data-bind="text: totalEvents()"></span></h3>
 
         <div class="planner clearfix" data-bind="style: { width: planerWidth }">
@@ -56,12 +58,13 @@
         <script type="text/html" id="room-template">
             <div class="panel panel-default room">
                 <div class="panel-heading">
+                    <a class="close" data-bind="click: remove">&times;</a>
                     <h3 class="panel-title" data-bind="text: name()"></h3>
                 </div>
-                <div class="room-container" data-bind="template: { name: 'event-template', foreach: events }"></div>
+                <div class="room-container" data-bind="template: { name: 'event-template', foreach: visibleEvents() }"></div>
                 <div class="panel-body cell-container" data-bind="foreach: rows">
                     <div class="cell" data-bind="style: { height: height }">
-                        <div class="open-block"></div>
+                        <div class="open-block" data-bind="click: $parent.promptNewEvent"></div>
                     </div>
                 </div>
             </div>
@@ -69,6 +72,7 @@
 
         <script type="text/html" id="event-template">
             <div class="event" data-bind="style: { height: height, width: width, top: position, marginLeft: margin }">
+                <a class="close" data-bind="click: $parent.removeEvent">&times;</a>
                 <ul class="list-unstyled" data-bind="style: { height: height }">
                     <li>
                         <label data-bind="text: name()">Name:</label>
@@ -80,6 +84,78 @@
         <script type="text/html" id="empty-space-template">
             <div class="spacer" data-bind="foreach: blocks, style: { height: height }">
                 <div class="open-block"></div>
+            </div>
+        </script>
+
+        <script type="text/html" id="add-room-template">
+            <div class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" aria-hidden="true" data-bind="click: cancel">&times;</button>
+                            <h3>Add Room</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form action="#" data-bind="submit: add">
+                                <div class="control-group">
+                                    <label class="control-label">Name:</label>
+                                    <div class="controls">
+                                        <input type="text" data-bind="value: name" />
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">Description:</label>
+                                    <div class="controls">
+                                        <textarea data-bind="value: description"></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-primary" data-bind="click: add">Add Room</a>
+                            <a href="#" class="btn" data-bind="click: cancel">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/html" id="add-event-template">
+            <div class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" aria-hidden="true" data-bind="click: cancel">&times;</button>
+                            <h3>Add Event</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form action="#" data-bind="submit: add">
+                                <div class="control-group">
+                                    <label class="control-label">Name:</label>
+                                    <div class="controls">
+                                        <input type="text" data-bind="value: name" />
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">Start:</label>
+                                    <div class="controls">
+                                        <input data-bind="datepicker: start" />
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">End:</label>
+                                    <div class="controls">
+                                        <input data-bind="datepicker: end" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-primary" data-bind="click: add">Add Event</a>
+                            <a href="#" class="btn" data-bind="click: cancel">Cancel</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </script>
 

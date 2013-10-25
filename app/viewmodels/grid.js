@@ -36,6 +36,10 @@
             return room;
         };
 
+        self.removeRoom = function(room){
+            self.columns.remove(room);
+        };
+
         //Computed Properties
         self.totalEvents = ko.dependentObservable(function() {
             var count, eventCount = 0;
@@ -52,6 +56,17 @@
 
             return (((rooms.length-1) * 210) + 210) + "px";
         });
+
+        self.promptForNewRoom = function(){
+            room_planner.modal.show({
+                viewModel: new room_planner.AddRoomViewModel(),
+                template: 'add-room-template'
+            }).done(function(model) {
+                self.addRoom(model.name());
+            }).fail(function() {
+                console.log("Modal cancelled");
+            });
+        };
     };
 
 }).call(this);

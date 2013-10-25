@@ -74,4 +74,20 @@
         }
     };
 
+    room_planner.AddEventViewModel = function(start, end){
+        var self = this;
+
+        self.name = ko.observable();
+        self.start = ko.observable(start);
+        self.end = ko.observable(end);
+
+        self.add = function () {
+            this.modal.close(self);
+        };
+
+        self.cancel = function () {
+            this.modal.close();
+        };
+    };
+
 }).call(this);
