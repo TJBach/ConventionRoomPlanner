@@ -13,7 +13,7 @@
             var factor = window.room_planner.factor;
             var difference = self.endTime() - self.startTime();
             var count = Math.ceil(difference / factor);
-            var time, startTime = self.startTime().getTime()
+            var time, startTime = self.startTime().getTime();
             var rows = [];
 
             for(var i = 0; i < count; i++){
@@ -65,6 +65,23 @@
                 self.addRoom(model.name());
             }).fail(function() {
                 console.log("Modal cancelled");
+            });
+        };
+
+        self.promptForNewEvent = function(row){
+            if(self.columns().length < 2){
+                return;
+            }
+
+            var start = self.startTime();
+            var end = new Date(start.getTime() + window.room_planner.factor);
+            var room = self.columns()[1];
+
+            room_planner.modal.show({
+                viewModel: new room_planner.AddEventViewModel(self, start, end, room),
+                template: 'add-event-template'
+            }).done(function(model) {
+                model.room().addEvent(model.name(), model.start(), model.end());
             });
         };
     };

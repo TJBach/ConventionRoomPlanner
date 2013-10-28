@@ -54,10 +54,11 @@
             var selfStart = this.start(), selfEnd = this.end();
             var otherStart = otherEvent.start(), otherEnd = otherEvent.end();
 
-            return (selfStart <= otherStart && selfEnd >= otherStart) ||
-                (selfStart <= otherEnd && selfEnd >= otherEnd) ||
-                (selfStart >= otherStart && selfEnd <= otherEnd);
-        }
+            return (selfStart < otherStart && selfEnd > otherStart) ||
+                (selfStart < otherEnd && selfEnd > otherEnd) ||
+                (selfStart > otherStart && selfEnd < otherEnd) ||
+                (selfStart.getTime() == otherStart.getTime() && selfEnd.getTime() == otherEnd.getTime());
+        };
 
         self.setOverlaps = function(otherEvents, skip){
             var z, against;
@@ -71,22 +72,12 @@
                     against.shift(against.shift() + 1);
                 }
             }
-        }
-    };
-
-    room_planner.AddEventViewModel = function(start, end){
-        var self = this;
-
-        self.name = ko.observable();
-        self.start = ko.observable(start);
-        self.end = ko.observable(end);
-
-        self.add = function () {
-            this.modal.close(self);
         };
 
-        self.cancel = function () {
-            this.modal.close();
+        self.rootTimeAt = function(date){
+            var difference = self.end() - self.start();
+            self.start(date);
+            self.end(new Date(date.getTime() + difference));
         };
     };
 

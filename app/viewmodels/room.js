@@ -3,6 +3,11 @@
 
     this.room_planner = this.room_planner || {};
 
+    var eventCreation = {
+        creatingStart: null,
+        row: null
+    };
+
     room_planner.Room = function(grid, name){
         var self = this;
 
@@ -37,43 +42,80 @@
             self.setEventOverlap(self.events());
         };
 
-        self.promptNewEvent = function(row){
-            var start = row.date;
-            var end = new Date(row.date.getTime() + window.room_planner.factor);
-
-            room_planner.modal.show({
-                viewModel: new room_planner.AddEventViewModel(start, end),
-                template: 'add-event-template'
-            }).done(function(model) {
-                self.addEvent(model.name(), model.start(), model.end());
-            }).fail(function() {
-                console.log("Modal cancelled");
-            });
-        };
-
-        self.remove = function(){
-            grid.removeRoom(self);
-        }
-
         self.removeEvent = function(event){
             self.events.remove(event);
 
             self.setEventOverlap(self.events());
         };
-    };
 
-    room_planner.AddRoomViewModel = function(){
-        var self = this;
-
-        self.name = ko.observable(name);
-        self.description = ko.observable();
-
-        self.add = function () {
-            this.modal.close(self);
+        self.creating = ko.observable(false);
+        self.markStart = function(row){
+            eventCreation.creatingStart = row.date;
+            eventCreation.room = self;
+            eventCreation.started = true;
+            self.creating(true);
+            row.creating(true);
         };
 
-        self.cancel = function () {
-            this.modal.close();
+        self.mark = function(row){
+            row.creating(eventCreation.started);
+        };
+
+        self.cancelCreate = function(room){
+            eventCreation.started = false;
+            room.creating(false);
+            for(var count = 0; count < self.rows().length; count++){
+                self.rows()[count].creating(false);
+            }
+        };
+
+        self.promptNewEvent = function(row){
+            if(!eventCreation.started){
+                return;
+            }
+
+            var start = eventCreation.creatingStart || row.date;
+            var end = new Date(row.date.getTime() + window.room_planner.factor);
+            var room = eventCreation.room || self;
+
+            room_planner.modal.show({
+                viewModel: new room_planner.AddEventViewModel(grid, start, end, self),
+                template: 'add-event-template'
+            }).done(function(model) {
+                model.room().addEvent(model.name(), model.start(), model.end());
+            }).fail(function() {
+                console.log("Modal cancelled");
+            }).always(function() {
+                self.cancelCreate(room);
+            });
+        };
+
+        self.dropEvent = function(eventContext, roomContext, evt, ui){
+            var event = eventContext.$data;
+            var oldRoom = eventContext.$parent;
+
+            var top, eventTop = ui.draggable.offset().top;
+            var cells = $(evt.target).children();
+            var found = false;
+            var current = 0;
+            var cell;
+
+            while(!found && current < cells.length){
+                top = $(cells[current]).offset().top + (window.room_planner.cellHeight/2);
+                found = top >= eventTop;
+                current++;
+            }
+
+            oldRoom.events.remove(event);
+            oldRoom.setEventOverlap(oldRoom.events());
+
+            if(found){
+                cell = ko.dataFor(cells[current-1]);
+                event.rootTimeAt(cell.date);
+            }
+
+            self.events.push(event);
+            self.setEventOverlap(self.events());
         };
     };
 
