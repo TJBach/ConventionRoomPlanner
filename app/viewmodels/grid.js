@@ -10,10 +10,12 @@
         self.endTime = ko.observable(endTime);
 
         self.rows = ko.dependentObservable(function(){
+            var start = self.startTime() || new Date();
+            var end = self.endTime() || new Date();
             var factor = window.room_planner.factor;
-            var difference = self.endTime() - self.startTime();
+            var difference = end - start;
             var count = Math.ceil(difference / factor);
-            var time, startTime = self.startTime().getTime();
+            var time, startTime = start.getTime();
             var rows = [];
 
             for(var i = 0; i < count; i++){
