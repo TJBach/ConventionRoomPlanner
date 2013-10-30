@@ -16,7 +16,7 @@
             : sort;
     };
 
-    function eventsOverlap( left, right )
+    var eventsOverlap = function ( left, right )
     {
         return left.end() > right.start() && left.start() < right.end();
     };
@@ -41,7 +41,7 @@
         return colSpan;
     };
 
-    function scaleEvent(columns)
+    var scaleEvent = function (columns)
     {
         var events, event, i, j;
         var colSpan;
