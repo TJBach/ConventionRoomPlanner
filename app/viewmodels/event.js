@@ -9,15 +9,17 @@
         self.name = ko.observable(name);
         self.start = ko.observable(start);
         self.end = ko.observable(end);
-        self.overlap = ko.observable(1);
+
         self.shift = ko.observable(0);
+        self.columns = ko.observable(1);
+        self.span = ko.observable(1);
 
         self.width = ko.dependentObservable(function(){
-            return ((1/self.overlap())*100) + '%';
+            return ((self.span()/self.columns())*100) + '%';
         });
 
         self.margin = ko.dependentObservable(function(){
-            return (self.shift() * ((1/self.overlap())*100)) + '%';
+            return (self.shift() * ((1/self.columns())*100)) + '%';
         });
 
         var getDisplayableStartAndEnd = function(){
@@ -37,42 +39,18 @@
         self.height = ko.dependentObservable(function() {
             var range = getDisplayableStartAndEnd();
 
-            return ((range.end - range.start) / window.room_planner.factor * window.room_planner.cellHeight) + "px"
+            return window.room_planner.getSize(range.end - range.start) + "px"
         });
 
         self.position = ko.dependentObservable(function() {
             var range = getDisplayableStartAndEnd();
             var timeOffset = range.start - grid.startTime();
-            return (timeOffset / window.room_planner.factor * window.room_planner.cellHeight) + "px"
+            return window.room_planner.getSize(timeOffset) + "px"
         });
 
         self.shown = ko.dependentObservable(function() {
             return self.start() < grid.endTime() && self.end() > grid.startTime();
         });
-
-        self.overlaps = function(otherEvent){
-            var selfStart = this.start(), selfEnd = this.end();
-            var otherStart = otherEvent.start(), otherEnd = otherEvent.end();
-
-            return (selfStart < otherStart && selfEnd > otherStart) ||
-                (selfStart < otherEnd && selfEnd > otherEnd) ||
-                (selfStart > otherStart && selfEnd < otherEnd) ||
-                (selfStart.getTime() == otherStart.getTime() && selfEnd.getTime() == otherEnd.getTime());
-        };
-
-        self.setOverlaps = function(otherEvents, skip){
-            var z, against;
-
-            for(z = skip; z < otherEvents.length; z++){
-                against = otherEvents[z];
-
-                if(this.overlaps(against) || against.overlaps(this)){
-                    this.overlap(this.overlap() + 1);
-                    against.overlap(against.overlap() + 1);
-                    against.shift(against.shift() + 1);
-                }
-            }
-        };
 
         self.rootTimeAt = function(date){
             var difference = self.end() - self.start();

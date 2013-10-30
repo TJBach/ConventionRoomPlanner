@@ -8,6 +8,99 @@
         row: null
     };
 
+    var sortEventsByStartThenEnd = function(left, right){
+        var sort = left.start() - right.start();
+
+        return sort == 0
+            ? (left.end() - right.end())
+            : sort;
+    };
+
+    function eventsOverlap( left, right )
+    {
+        return left.end() > right.start() && left.start() < right.end();
+    };
+
+    var expandEvent = function(event, index, columns)
+    {
+        var i, z, colSpan = 1;
+        var column, columnEvent;
+
+        for(i = index+1; i < columns.length; i++){
+            column = columns[i];
+
+            for(z = 0; z < column.length; z++){
+                columnEvent = column[z];
+
+                if(eventsOverlap(columnEvent, event)){
+                    return colSpan;
+                }
+            }
+            colSpan++;
+        }
+        return colSpan;
+    };
+
+    function scaleEvent(columns)
+    {
+        var events, event, i, j;
+        var colSpan;
+
+        for (i = 0; i < columns.length; i++) {
+            events = columns[i];
+
+            for (j = 0; j < events.length; j++)
+            {
+                event = events[j];
+
+                colSpan = expandEvent(event, i, columns);
+                event.shift(i);
+                event.columns(columns.length);
+                event.span(colSpan);
+            }
+        }
+    };
+
+    var setEventOverlap = function(events){
+        var i, z, current, last;
+        var columns = [];
+        var placed, column;
+
+        events = events.sort(sortEventsByStartThenEnd);
+
+        for(i = 0; i < events.length; i++){
+            current = events[i];
+
+            if (last && current.start() >= last.end()) {
+                scaleEvent(columns);
+                columns = [];
+                last = null;
+            }
+
+            placed = false;
+            for (z = 0; z < columns.length && !placed; z++) {
+                column = columns[z];
+                placed = !eventsOverlap( column[column.length-1], current );
+
+                if (placed) {
+                    column.push(current);
+                }
+            }
+
+            if (!placed) {
+                columns.push([current]);
+            }
+
+            if (!last || current.end() > last.end()) {
+                last = current;
+            }
+        }
+
+        if (columns.length > 0) {
+            scaleEvent( columns );
+        }
+    };
+
     room_planner.Room = function(grid, name){
         var self = this;
 
@@ -16,6 +109,7 @@
         self.events = ko.observableArray();
         self.rows = grid.rows;
         self.template = "room-template";
+        self.creating = ko.observable(false);
 
         self.visibleEvents = ko.dependentObservable(function(){
             return ko.utils.arrayFilter(self.events(), function(event) {
@@ -23,36 +117,22 @@
             });
         });
 
-        self.setEventOverlap = function(events){
-            var i;
-
-            for(i = 0; i < events.length; i++){
-                events[i].overlap(1);
-                events[i].shift(0);
-            }
-
-            for(i = 0; i < events.length; i++){
-                events[i].setOverlaps(events, i+1);
-            }
-        };
+        self.events.subscribe(function() {
+            ko.tasks.processImmediate( function() { setEventOverlap(self.events()); });
+        });
 
         self.addEvent = function(name, start, end){
             self.events.push(new room_planner.Event(grid, name, start, end));
-
-            self.setEventOverlap(self.events());
         };
 
         self.removeEvent = function(event){
             self.events.remove(event);
-
-            self.setEventOverlap(self.events());
         };
 
-        self.creating = ko.observable(false);
         self.markStart = function(row){
             eventCreation.creatingStart = row.date;
-            eventCreation.room = self;
             eventCreation.started = true;
+
             self.creating(true);
             row.creating(true);
         };
@@ -63,9 +143,11 @@
 
         self.cancelCreate = function(room){
             eventCreation.started = false;
-            room.creating(false);
-            for(var count = 0; count < self.rows().length; count++){
-                self.rows()[count].creating(false);
+            room.creating(false)
+
+            var rows = self.rows();
+            for(var count = 0; count < rows.length; count++){
+                rows[count].creating(false);
             }
         };
 
@@ -76,7 +158,7 @@
 
             var start = eventCreation.creatingStart || row.date;
             var end = new Date(row.date.getTime() + window.room_planner.factor);
-            var room = eventCreation.room || self;
+            var room = self;
 
             room_planner.modal.show({
                 viewModel: new room_planner.AddEventViewModel(grid, start, end, self),
@@ -107,7 +189,6 @@
             }
 
             oldRoom.events.remove(event);
-            oldRoom.setEventOverlap(oldRoom.events());
 
             if(found){
                 cell = ko.dataFor(cells[current-1]);
@@ -115,7 +196,6 @@
             }
 
             self.events.push(event);
-            self.setEventOverlap(self.events());
         };
     };
 

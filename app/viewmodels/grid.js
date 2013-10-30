@@ -59,6 +59,7 @@
             return (((rooms.length-1) * 210) + 210) + "px";
         });
 
+        //events
         self.promptForNewRoom = function(){
             room_planner.modal.show({
                 viewModel: new room_planner.AddRoomViewModel(),
@@ -70,7 +71,7 @@
             });
         };
 
-        self.promptForNewEvent = function(row){
+        self.promptForNewEvent = function(){
             if(self.columns().length < 2){
                 return;
             }
