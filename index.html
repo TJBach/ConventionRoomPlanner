@@ -31,14 +31,8 @@
 
         <div class="planner clearfix" data-bind="style: { width: planerWidth }">
 
-            <div data-bind="template: { name: displayMode, foreach: columns }">
-                <div data-bind="attr: { class: 'panel panel-default ' + class }">
-                    <div class="panel-heading">
-                        <h3 class="panel-title" data-bind="text: name()"></h3>
-                    </div>
-                    <div data-bind="attr: { class: 'panel-body ' + class }, template: { name: template, foreach: rows }">
-                    </div>
-                </div>
+            <div data-bind="template: { name: displayMode, foreach: columns }, sortableList: { list: columns, handle: '.panel-heading', items: '.room', distance: 30 }">
+
             </div>
 
         </div>

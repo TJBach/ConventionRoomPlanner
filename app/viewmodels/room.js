@@ -118,7 +118,7 @@
         });
 
         self.events.subscribe(function() {
-            ko.tasks.processImmediate( function() { setEventOverlap(self.events()); });
+            setEventOverlap(self.events());
         });
 
         self.addEvent = function(name, start, end){

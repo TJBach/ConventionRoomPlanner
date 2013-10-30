@@ -80,3 +80,41 @@ ko.bindingHandlers.droppable = {
         });
     }
 };
+
+//connect items with observableArrays
+ko.bindingHandlers.sortableList = {
+    init: function(element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        var list = value.list || valueAccessor() || [];
+
+        var defaults = {
+            update: function(event, ui) {
+                //retrieve our actual data item
+                var item = ko.dataFor(ui.item[0]);
+                //figure out its new position
+                var position = ko.utils.arrayIndexOf(ui.item.parent().children(), ui.item[0]);
+
+                if (position >= list().length) {
+                    position = list().length - 1;
+                }
+                if (position < 0) {
+                    position = 0;
+                }
+
+                ui.item.remove();
+                //remove the item and add it back in the right spot
+                list.remove(item);
+                list.splice(position, 0, item);
+            }
+        };
+
+        var options = $.extend(defaults, value);
+
+        $(element).sortable(options);
+
+        //handle disposal (if KO removes by the template binding)
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+            $(element).sortable("destroy");
+        });
+    }
+};

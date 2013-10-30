@@ -1,7 +1,7 @@
 (function(){
     "use strict";
 
-    ko.computed.deferUpdates = false;
+    //ko.computed.deferUpdates = false;
 
     //Bootstrap some test data
     var planner = new room_planner.Grid(new Date(2013, 9, 22, 7), new Date(2013, 9, 23, 12));
