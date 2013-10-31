@@ -28,6 +28,10 @@
 
         self.columns = ko.observableArray([new room_planner.TimeBar(self)]);
 
+        self.rooms = ko.dependentObservable(function(){
+            return self.columns().slice(1);
+        });
+
         self.displayMode = function(column){
             return column.template;
         };

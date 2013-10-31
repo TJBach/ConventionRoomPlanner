@@ -6,8 +6,11 @@
     room_planner.AddRoomViewModel = function(){
         var self = this;
 
-        self.name = ko.observable(name);
+        self.name = ko.observable();
         self.description = ko.observable();
+
+        self.title = "Add Room";
+        self.confirmText = "Add Room";
 
         self.add = function () {
             this.modal.close(self);

@@ -57,6 +57,17 @@
             self.start(date);
             self.end(new Date(date.getTime() + difference));
         };
+
+        self.promptForEditEvent = function(){
+            var room = _.find(grid.rooms(), function(r){
+                return r.events.indexOf(self) > -1;
+            });
+
+            room_planner.modal.show({
+                viewModel: new room_planner.EditEventViewModel(self, room, grid),
+                template: 'add-event-template'
+            });
+        };
     };
 
 }).call(this);

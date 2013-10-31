@@ -52,9 +52,9 @@
 
         <script type="text/html" id="room-template">
             <div class="panel panel-default room" data-bind="event: { mouseleave: cancelCreate }">
-                <div class="panel-heading">
+                <div class="panel-heading" data-bind ="event: { dblclick: promptForEditRoom }">
                     <a class="close" data-bind="click: $parent.removeRoom">&times;</a>
-                    <h3 class="panel-title" data-bind="text: name()"></h3>
+                    <h3 class="panel-title" data-bind="text: (name() || '&nbsp')"></h3>
                 </div>
                 <div class="room-container" data-bind="template: { name: 'event-template', foreach: visibleEvents() }"></div>
                 <div class="panel-body cell-container" data-bind="foreach: rows, droppable: { kodrop: dropEvent, accept: '.event' }">
@@ -66,7 +66,7 @@
         </script>
 
         <script type="text/html" id="event-template">
-            <div class="event" data-bind="style: { height: height, width: width, top: position, marginLeft: margin }, draggable: { distance: 20, revert: 'invalid' }">
+            <div class="event" data-bind="style: { height: height, width: width, top: position, marginLeft: margin }, draggable: { distance: 20, revert: 'invalid' }, event: { dblclick: promptForEditEvent }">
                 <a class="close" data-bind="click: $parent.removeEvent">&times;</a>
                 <ul class="list-unstyled" data-bind="style: { height: height }">
                     <li>
@@ -88,7 +88,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" aria-hidden="true" data-bind="click: cancel">&times;</button>
-                            <h3>Add Room</h3>
+                            <h3 data-bind="text: title"></h3>
                         </div>
                         <div class="modal-body">
                             <form action="#" data-bind="submit: add">
@@ -107,7 +107,7 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <a href="#" class="btn btn-primary" data-bind="click: add">Add Room</a>
+                            <a href="#" class="btn btn-primary" data-bind="click: add, text: confirmText">Add Room</a>
                             <a href="#" class="btn" data-bind="click: cancel">Cancel</a>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" aria-hidden="true" data-bind="click: cancel">&times;</button>
-                            <h3>Add Event</h3>
+                            <h3 data-bind="text: title">Add Event</h3>
                         </div>
                         <div class="modal-body">
                             <form action="#" data-bind="submit: add">
@@ -154,7 +154,7 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <a href="#" class="btn btn-primary" data-bind="click: add">Add Event</a>
+                            <a href="#" class="btn btn-primary" data-bind="click: add, text: confirmText">Add Event</a>
                             <a href="#" class="btn" data-bind="click: cancel">Cancel</a>
                         </div>
                     </div>

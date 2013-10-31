@@ -172,6 +172,13 @@
             });
         };
 
+        self.promptForEditRoom = function(){
+            room_planner.modal.show({
+                viewModel: new room_planner.EditRoomViewModel(self),
+                template: 'add-room-template'
+            });
+        };
+
         self.dropEvent = function(eventContext, roomContext, evt, ui){
             var event = eventContext.$data;
             var oldRoom = eventContext.$parent;

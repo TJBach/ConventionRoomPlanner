@@ -11,7 +11,7 @@ module.exports = function(grunt) {
             prod:{
                 files: [
                     {
-                        src: ['lib/jquery/jquery-1.9.1.min.js', 'lib/jquery-ui/js/jquery-ui-1.10.3.custom.min.js', 'lib/bootstrap/js/bootstrap.min.js', 'lib/knockout/knockout-2.3.0.js', 'lib/lodash/lodash.min.js'],
+                        src: ['lib/jquery/jquery-1.9.1.min.js', 'lib/jquery-ui/js/jquery-ui-1.10.3.custom.min.js', 'lib/jquery/jquery.ui.touch-punch.min.js', 'lib/bootstrap/js/bootstrap.min.js', 'lib/knockout/knockout-2.3.0.js', 'lib/lodash/lodash.min.js'],
                         dest: 'build/prod/js/lib.<%= hash %>.js'
                     },
                     {
@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             dev: {
                 files: [
                     {
-                        src: ['lib/jquery/jquery-1.9.1.js', 'lib/jquery-ui/js/jquery-ui-1.10.3.custom.js', 'lib/bootstrap/js/bootstrap.js', 'lib/knockout/knockout-2.3.0.debug.js', 'lib/lodash/lodash.js'],
+                        src: ['lib/jquery/jquery-1.9.1.js', 'lib/jquery-ui/js/jquery-ui-1.10.3.custom.js', 'lib/jquery/jquery.ui.touch-punch.js', 'lib/bootstrap/js/bootstrap.js', 'lib/knockout/knockout-2.3.0.debug.js', 'lib/lodash/lodash.js'],
                         dest: 'build/dev/js/lib.<%= hash %>.js'
                     },
                     {src: ['app/**/*.js', '!app/main.js', 'lib/jquery-ui/js/jquery-ui-timepicker-addon.js'], dest: 'build/dev/js/application.<%= hash %>.js'},
