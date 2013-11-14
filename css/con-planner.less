@@ -1,4 +1,54 @@
 @cell-height:                    30px;
+@red:         #FF0000;
+@green:       #00FF00;
+@blue:        #0000FF;
+@yellow:      #FFFF00;
+@light_blue:  #00FFFF;
+@pink:        #FF00FF;
+@gray:        #C0C0C0;
+@white:       #FFFFFF;
+
+.bordered-colors(@lighten: 40%) {
+  &.red{
+    background-color: lighten(@red, @lighten);
+    border: 1px solid @red;
+  }
+
+  &.green{
+    background-color: lighten(@green, @lighten);
+    border: 1px solid @green;
+  }
+
+  &.blue{
+    background-color: lighten(@blue, @lighten);
+    border: 1px solid @blue;
+  }
+
+  &.yellow{
+    background-color: lighten(@yellow, @lighten);
+    border: 1px solid black;
+  }
+
+  &.light_blue{
+    background-color: lighten(@light_blue, @lighten);
+    border: 1px solid @light_blue;
+  }
+
+  &.pink{
+    background-color: lighten(@pink, @lighten);
+    border: 1px solid @pink;
+  }
+
+  &.gray{
+    background-color: lighten(@gray, @lighten);
+    border: 1px solid black;
+  }
+
+  &.white{
+    background-color: lighten(@white, @lighten);
+    border: 1px solid black;
+  }
+}
 
 .planner{
     padding-top: 10px;
@@ -19,6 +69,12 @@
     border: 1px solid black;
     float: left;
     position: absolute;
+
+  .bordered-colors;
+}
+
+.modal-content{
+  .bordered-colors;
 }
 
 .event:hover {
@@ -63,6 +119,30 @@
 }
 .panel-heading{
 
+}
+.panel-title{
+
+}
+
+.edit{
+  float: left;
+  font-size: 21px;
+  font-weight: bold;
+  line-height: 1;
+  color: #000000;
+  text-shadow: 0 1px 0 #ffffff;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+  margin-right: 5px;
+}
+
+.edit:hover,
+.edit:focus {
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
 }
 
 .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }

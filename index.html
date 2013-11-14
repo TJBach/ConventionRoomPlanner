@@ -66,8 +66,9 @@
         </script>
 
         <script type="text/html" id="event-template">
-            <div class="event" data-bind="style: { height: height, width: width, top: position, marginLeft: margin }, draggable: { distance: 20, revert: 'invalid' }, event: { dblclick: promptForEditEvent }">
+            <div class="event" data-bind="style: { height: height, width: width, top: position, marginLeft: margin }, draggable: { distance: 20, revert: 'invalid' }, event: { dblclick: promptForEditEvent }, css: getColor">
                 <a class="close" data-bind="click: $parent.removeEvent">&times;</a>
+                <i class="edit ui-icon ui-icon-pencil" data-bind="click: promptForEditEvent"></i>
                 <ul class="list-unstyled" data-bind="style: { height: height }">
                     <li>
                         <label data-bind="text: name()"></label>
@@ -118,7 +119,7 @@
         <script type="text/html" id="add-event-template">
             <div class="modal fade" role="dialog">
                 <div class="modal-dialog">
-                    <div class="modal-content">
+                    <div class="modal-content" data-bind="css: getColor">
                         <div class="modal-header">
                             <button type="button" class="close" aria-hidden="true" data-bind="click: cancel">&times;</button>
                             <h3 data-bind="text: title">Add Event</h3>
@@ -137,6 +138,13 @@
                                         <select data-bind="options: rooms,
                                            optionsText: getRoomName,
                                            value: room"></select>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">Color:</label>
+                                    <div class="controls">
+                                        <select data-bind="options: colors,
+                                           value: color"></select>
                                     </div>
                                 </div>
                                 <div class="control-group">

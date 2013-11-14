@@ -16,6 +16,13 @@
         self.title = "Add Event";
         self.confirmText = "Add Event";
 
+        self.colors = ko.observableArray(['red', 'green', 'blue', 'yellow', 'pink', 'white']);
+        self.color = ko.observable('white');
+
+        self.getColor = ko.computed(function() {
+            return "modal-content " + self.color();
+        });
+
         self.getRoomName = function(room){
             return room.name();
         };

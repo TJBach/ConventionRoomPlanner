@@ -121,8 +121,8 @@
             setEventOverlap(self.events());
         });
 
-        self.addEvent = function(name, start, end){
-            self.events.push(new room_planner.Event(grid, name, start, end));
+        self.addEvent = function(name, start, end, color){
+            self.events.push(new room_planner.Event(grid, name, start, end, color));
         };
 
         self.removeEvent = function(event){
@@ -164,7 +164,7 @@
                 viewModel: new room_planner.AddEventViewModel(grid, start, end, self),
                 template: 'add-event-template'
             }).done(function(model) {
-                model.room().addEvent(model.name(), model.start(), model.end());
+                model.room().addEvent(model.name(), model.start(), model.end(), model.color());
             }).fail(function() {
                 console.log("Modal cancelled");
             }).always(function() {

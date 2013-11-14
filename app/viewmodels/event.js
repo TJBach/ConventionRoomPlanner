@@ -3,12 +3,14 @@
 
     this.room_planner = this.room_planner || {};
 
-    room_planner.Event = function(grid, name, start, end){
+    room_planner.Event = function(grid, name, start, end, color){
         var self = this;
 
         self.name = ko.observable(name);
         self.start = ko.observable(start);
         self.end = ko.observable(end);
+
+        self.color = ko.observable(color || 'white');
 
         self.shift = ko.observable(0);
         self.columns = ko.observable(1);
@@ -20,6 +22,10 @@
 
         self.margin = ko.dependentObservable(function(){
             return (self.shift() * ((1/self.columns())*100)) + '%';
+        });
+
+        self.getColor = ko.computed(function() {
+            return "event " + self.color();
         });
 
         var getDisplayableStartAndEnd = function(){
