@@ -20,7 +20,7 @@
         self.color = ko.observable('white');
 
         self.getColor = ko.computed(function() {
-            return "modal-content " + self.color();
+            return "color-preview " + self.color();
         });
 
         self.getRoomName = function(room){

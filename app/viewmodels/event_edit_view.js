@@ -17,10 +17,10 @@
         self.confirmText = "Edit Event";
 
         self.colors = ko.observableArray(['red', 'green', 'blue', 'yellow', 'pink', 'white']);
-        self.color = ko.observable('white');
+        self.color = ko.observable(event.color() || 'white');
 
         self.getColor = ko.computed(function() {
-            return "modal-content " + self.color();
+            return "color-preview " + self.color();
         });
 
         self.getRoomName = function(room){

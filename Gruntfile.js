@@ -26,7 +26,7 @@ module.exports = function(grunt) {
                         src: ['lib/jquery/jquery-1.9.1.js', 'lib/jquery-ui/js/jquery-ui-1.10.3.custom.js', 'lib/jquery-ui/js/jquery.ui.touch-punch.js', 'lib/bootstrap/js/bootstrap.js', 'lib/knockout/knockout-2.3.0.debug.js', 'lib/lodash/lodash.js'],
                         dest: 'build/dev/js/lib.<%= hash %>.js'
                     },
-                    {src: ['app/**/*.js', '!app/main.js', 'lib/jquery-ui/js/jquery-ui-timepicker-addon.js'], dest: 'build/dev/js/application.<%= hash %>.js'},
+                    {src: ['app/**/*.js', '!app/main.js', 'lib/jquery-ui/js/jquery-ui-timepicker-addon.js', 'lib/jquery-plugins/**/*.js'], dest: 'build/dev/js/application.<%= hash %>.js'},
                     {src: ['app/main.js'], dest: 'build/dev/js/main.<%= hash %>.js'},
                     {
                         src: ['lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.css', 'build/stage/css/bootstrap.css', "build/stage/css/bootstrap-theme.css"],
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
             },
             prod: {
                 files: [
-                    {src: ['app/**/*.js', '!app/main.js', 'lib/jquery-ui/js/jquery-ui-timepicker-addon.js'], dest: 'build/prod/js/application.<%= hash %>.js'},
+                    {src: ['app/**/*.js', '!app/main.js', 'lib/jquery-ui/js/jquery-ui-timepicker-addon.js', 'lib/jquery-plugins/**/*.js'], dest: 'build/prod/js/application.<%= hash %>.js'},
                     {src: ['app/main.js'], dest: 'build/prod/js/main.<%= hash %>.js'}
                 ]
             }
