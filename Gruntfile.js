@@ -50,13 +50,15 @@ module.exports = function(grunt) {
             prod: {
                 files: [
                     { src: 'lib/bootstrap/fonts/*', dest: 'build/prod/fonts/', expand: true, flatten: true },
-                    { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/prod/images/', expand: true, flatten: true }
+                    { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/prod/images/', expand: true, flatten: true },
+                    { src: 'server.js', dest: 'build/prod/server.js' }
                 ]
             },
             dev: {
                 files: [
                     { src: 'lib/bootstrap/fonts/*', dest: 'build/dev/fonts/', expand: true, flatten: true },
-                    { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/dev/images/', expand: true, flatten: true }
+                    { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/dev/images/', expand: true, flatten: true },
+                    { src: 'server.js', dest: 'build/dev/server.js' }
                 ]
             }
         },
