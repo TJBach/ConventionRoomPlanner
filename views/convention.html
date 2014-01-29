@@ -7,17 +7,23 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
 
         <script src="/socket.io/socket.io.js"></script>
-        <link rel="stylesheet" href="css/lib.<!-- @echo hash -->.css" />
-        <link rel="stylesheet" href="css/app.<!-- @echo hash -->.css" />
+        <link rel="stylesheet" href="/css/lib.<!-- @echo hash -->.css" />
+        <link rel="stylesheet" href="/css/app.<!-- @echo hash -->.css" />
 
-        <script src="js/lib.<!-- @echo hash -->.js"></script>
-        <script src="js/application.<!-- @echo hash -->.js"></script>
+        <script src="/js/lib.<!-- @echo hash -->.js"></script>
+        <script src="/js/application.<!-- @echo hash -->.js"></script>
     </head>
     <body>
         <div class="navbar navbar-inverse">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Convention Planner</a>
             </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">{{convention.name}}</a></li>
+                    <li ><a href="/">All</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
         </div>
 
         <label>Show from </label>
@@ -38,16 +44,39 @@
 
         </div>
 
-        <div>
-            <h1>A Chat application with Node.js and Socket.io</h1>
-            <input type="text" id="pseudoInput" />
-            <button id="pseudoSet">Set Pseudo</button>
-            <div id="chatEntries"> </div>
-            <div id="chatControls">
-                <input type="text" id="messageInput" />
-                <button id="submit">Send</button>
+        <div data-bind="template: { name: 'chat-template', data: chat }"></div>
+
+        <script type="text/html" id="chat-template">
+
+            <div class="chat-widget">
+                <div class="chat-header label label-info" data-toggle="collapse" data-target=".chat-content">Chat</div>
+                <div class="chat-content collapse in">
+                    <div class="chat-entries" data-bind="foreach: chatLog">
+                        <div class="message">
+                            <p>
+                                <label data-bind="text: alias"></label>
+                                <span data-bind="text: message"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="chatAlias" data-bind="visible: !alias()">
+                        <input type="text" class="form-control" data-bind="value: name, event: { keypress: checkSubmitName }" />
+                        <div style="padding-top:3px;">
+                            <a class="btn btn-primary btn-xs" style="float:right;" data-bind="click: setAlias">Set Alias</a>
+                        </div>
+                    </div>
+                    <div data-bind="visible: alias">
+                        <div class="chatControls">
+                            <input type="text" class="form-control" data-bind="value: text, event: { keypress: checkSubmitMessage }, hasfocus: focusText" />
+                            <div style="padding-top:3px;">
+                                <a class="btn btn-default btn-xs" style="float:left;" data-bind="click: clearAlias">Change Name</a>
+                                <a class="btn btn-primary btn-xs" style="float:right;" data-bind="click: sendMessage">Send</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </script>
 
         <script type="text/html" id="time-template">
             <div class="panel panel-default times">
@@ -182,6 +211,9 @@
             </div>
         </script>
 
-        <script src="js/main.<!-- @echo hash -->.js"></script>
+        <script type="text/javascript">
+            var conventionId = '{{convention._id}}';
+        </script>
+        <script src="/js/main.<!-- @echo hash -->.js"></script>
     </body>
 </html>

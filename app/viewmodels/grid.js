@@ -3,8 +3,11 @@
 
     this.room_planner = this.room_planner || {};
 
-    room_planner.Grid = function(startTime, endTime){
+    room_planner.Grid = function(conventionId, startTime, endTime){
         var self = this;
+
+        self.con_id = ko.observable(conventionId);
+        self.chat = new room_planner.ChatClient(conventionId);
 
         self.startTime = ko.observable(startTime);
         self.endTime = ko.observable(endTime);

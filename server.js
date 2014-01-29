@@ -1,12 +1,14 @@
-var express = require('express');
+var express = require('express.io');
 var http = require('http');
 var mustache = require('mustache');
 var socketio = require('socket.io');
 var cons = require('consolidate');
+var routes = require('./routes/index.js');
 
 var app = express();
-var server = http.createServer(app);
-var io = socketio.listen(server);
+app.http().io()
+
+var socketRoutes = require('./routes/socket.js')(app);
 
 // assign the swig engine to .html files
 app.engine("html", cons.mustache);
@@ -16,29 +18,24 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 app.use(express.static(__dirname));
+app.use(express.bodyParser());
 
-app.get('/', function(req, res){
-    res.render('index', {
-        locals: {
-            title: 'Welcome'
-        }
-    });
-});
+// Setup your sessions.
+app.use(express.cookieParser());
+app.use(express.session({secret: '138a4226920b4b9dad0176f927675cb9'}));
 
-io.sockets.on('connection', function (socket) {
-    //our other events...
-    socket.on('setPseudo', function (data) {
-        socket.set('pseudo', data);
-    });
+//set socket io routes
+app.io.route('chat', socketRoutes.chatRoutes);
+app.io.route('convention', socketRoutes.conventionRoutes);
 
-    socket.on('message', function (message) {
-        socket.get('pseudo', function (error, name) {
-            var data = { 'message' : message, pseudo : name };
-            socket.broadcast.emit('message', data);
-            console.log("user " + name + " send this : " + message);
-        })
-    });
-});
+//set normal routes
+app.post('/convention/create', routes.createConvetion);
+app.post('/convention/delete', routes.deleteConvention);
 
-server.listen(3000);
+app.get('/convention/:id', routes.findConvention);
+
+app.get('/', routes.index);
+
+//start
+app.listen(3000);
 

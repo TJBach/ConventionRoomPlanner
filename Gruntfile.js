@@ -51,14 +51,16 @@ module.exports = function(grunt) {
                 files: [
                     { src: 'lib/bootstrap/fonts/*', dest: 'build/prod/fonts/', expand: true, flatten: true },
                     { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/prod/images/', expand: true, flatten: true },
-                    { src: 'server.js', dest: 'build/prod/server.js' }
+                    { src: 'server.js', dest: 'build/prod/server.js' },
+                    { src: 'routes/*', dest: 'build/prod/' }
                 ]
             },
             dev: {
                 files: [
                     { src: 'lib/bootstrap/fonts/*', dest: 'build/dev/fonts/', expand: true, flatten: true },
                     { src: 'lib/jquery-ui/css/smoothness/images/*', dest: 'build/dev/images/', expand: true, flatten: true },
-                    { src: 'server.js', dest: 'build/dev/server.js' }
+                    { src: 'server.js', dest: 'build/dev/server.js' },
+                    { src: 'routes/*', dest: 'build/dev/' }
                 ]
             }
         },
@@ -111,12 +113,16 @@ module.exports = function(grunt) {
                 }
             },
             dev : {
-                src : 'index.html',
-                dest : 'build/dev/index.html'
+                files : {
+                    'build/dev/views/index.html' : 'views/index.html',
+                    'build/dev/views/convention.html' : 'views/convention.html'
+                }
             },
             prod : {
-                src : 'index.html',
-                dest : 'build/prod/index.html'
+                files : {
+                    'build/prod/views/index.html' : 'views/index.html',
+                    'build/prod/views/convention.html' : 'views/convention.html'
+                }
             }
         },
         watch: {

@@ -11,4 +11,10 @@
         return timespan / window.room_planner.factor * window.room_planner.cellHeight;
     };
 
+    var socket =  io.connect();
+
+    window.room_planner.getSocket = function(){
+        return socket;
+    };
+
 }).call(this);
