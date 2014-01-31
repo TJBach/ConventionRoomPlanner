@@ -3,29 +3,110 @@
 
     //ko.computed.deferUpdates = false;
 
-    //Bootstrap some test data
-    var planner = new room_planner.Grid(conventionId, new Date(2013, 9, 22, 7), new Date(2013, 9, 23, 12));
+    var id = conventionId;
 
-    var roomOne = planner.addRoom("Room 123");
-    var roomTwo = planner.addRoom("Room 223");
-    var roomThree = planner.addRoom("Room 224");
-    var roomFour =planner.addRoom("Ball Room");
+    var loadGrid = function(convention){
+        var planner = new room_planner.Grid(convention);
 
-    roomOne.addEvent("Test 1", new Date(2013, 9, 22, 8, 30), new Date(2013, 9, 22, 10, 30));
-    roomTwo.addEvent("Test 2", new Date(2013, 9, 22, 8, 0), new Date(2013, 9, 22, 9, 0));
-    roomTwo.addEvent("Test 3", new Date(2013, 9, 22, 9, 30), new Date(2013, 9, 22, 12, 0));
-    roomThree.addEvent("Overlap 1", new Date(2013, 9, 22, 10, 0), new Date(2013, 9, 22, 12, 0));
-    roomThree.addEvent("Overlap 2", new Date(2013, 9, 22, 11, 30), new Date(2013, 9, 22, 13, 0));
-    roomFour.addEvent("Overlap 3", new Date(2013, 9, 22, 7, 30), new Date(2013, 9, 22, 15, 0));
-    roomFour.addEvent("Overlap 4", new Date(2013, 9, 22, 10, 0), new Date(2013, 9, 22, 11, 0));
-    roomFour.addEvent("Overlap 5", new Date(2013, 9, 22, 9, 30), new Date(2013, 9, 22, 12, 0));
-    roomFour.addEvent("Overlap 6", new Date(2013, 9, 22, 12, 30), new Date(2013, 9, 22, 13, 0));
+        var rooms = convention.rooms || [];
+        var room, events, event;
 
-    //star the binding
-    ko.applyBindings(planner);
+        for(var i = 0; i < rooms.length; i++){
+            room = planner.addRoom(rooms[i]);
+
+            events = rooms[i].events || [];
+
+            for(var z = 0; z < events.length; z++){
+                event = room.addEvent(events[z])
+            }
+        }
+
+        return planner;
+    };
 
     var socket = room_planner.getSocket();
 
-    socket.emit('convention:connect', conventionId);
+    socket.emit('convention:connect', id);
+
+    var planner = loadGrid(convention);
+
+    //room messages
+    socket.on('room:add', function(data) {
+        planner.addRoom(data[0]);
+    });
+
+    socket.on('room:update', function(data) {
+        var room = planner.findRoom(data._id);
+
+        room.name(data.name);
+        room.description(data.description);
+    });
+
+    socket.on('room:remove', function(data) {
+        var room = planner.findRoom(data._id);
+
+        planner.removeRoom(room);
+    });
+
+    socket.on('room:reserve', function(data) {
+        var room = planner.findRoom(data._id);
+
+        room.reserve(data.user);
+    });
+
+    socket.on('room:release', function(data) {
+        var room = planner.findRoom(data._id);
+
+        room.reserve(false);
+    });
+
+    //event messages
+    socket.on('event:add', function(data) {
+        data = data[0];
+        var room = planner.findRoom(data.roomId);
+
+        room.addEvent(data);
+    });
+
+    socket.on('event:update', function(data) {
+        var event = planner.findEvent(data._id);
+
+        event.name(data.name);
+        event.start(new Date(data.start));
+        event.end(new Date(data.end));
+        event.color(data.color);
+
+        if(event.roomId() != data.roomId){
+            var sourceRoom = planner.findRoom(event.roomId());
+            var desitinationRoom = planner.findRoom(data.roomId);
+
+            sourceRoom.events.remove(event);
+            desitinationRoom.events.push(event);
+        }
+
+        event.roomId(data.roomId);
+    });
+
+    socket.on('event:remove', function(data) {
+        var room = planner.findRoom(data.roomId);
+        var event = planner.findEvent(data._id);
+
+        room.removeEvent(event);
+    });
+
+    socket.on('event:reserve', function(data) {
+        var event = planner.findEvent(data._id);
+
+        event.reserve(data.user);
+    });
+
+    socket.on('event:release', function(data) {
+        var event = planner.findEvent(data._id);
+
+        event.reserve(false);
+    });
+
+    //star the binding
+    ko.applyBindings(planner);
 
 }).call(this);

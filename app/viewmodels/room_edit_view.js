@@ -3,6 +3,8 @@
 
     this.room_planner = this.room_planner || {};
 
+    var socket = room_planner.getSocket();
+
     room_planner.EditRoomViewModel = function(room){
         var self = this;
 
@@ -15,6 +17,8 @@
         self.add = function () {
             room.name(self.name());
             room.description(self.description());
+
+            socket.emit('room:update', ko.toJS(room));
 
             this.modal.close(self);
         };

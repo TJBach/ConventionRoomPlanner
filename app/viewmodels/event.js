@@ -3,18 +3,27 @@
 
     this.room_planner = this.room_planner || {};
 
-    room_planner.Event = function(grid, name, start, end, color){
+    var socket = room_planner.getSocket();
+
+    room_planner.Event = function(grid, room, event){
         var self = this;
 
-        self.name = ko.observable(name);
-        self.start = ko.observable(start);
-        self.end = ko.observable(end);
+        self._id = ko.observable(event._id);
+        self.conId = ko.observable(grid._id());
+        self.roomId = ko.observable(room._id());
 
-        self.color = ko.observable(color || 'white');
+        self.name = ko.observable(event.name);
+
+        self.start = ko.observable(_.isString(event.start) ? new Date(event.start) : event.start);
+        self.end = ko.observable(_.isString(event.end) ? new Date(event.end) : event.end);
+
+        self.color = ko.observable(event.color || 'white');
 
         self.shift = ko.observable(0);
         self.columns = ko.observable(1);
         self.span = ko.observable(1);
+
+        self.reserve = ko.observable(false);
 
         self.width = ko.dependentObservable(function(){
             return ((self.span()/self.columns())*100) + '%';
@@ -25,7 +34,7 @@
         });
 
         self.getColor = ko.computed(function() {
-            return "event " + self.color();
+            return "event " + (self.reserve() ? "black" : self.color());
         });
 
         var getDisplayableStartAndEnd = function(){
@@ -62,6 +71,22 @@
             var difference = self.end() - self.start();
             self.start(date);
             self.end(new Date(date.getTime() + difference));
+        };
+
+        self.startDrag = function(ctx){
+            socket.emit('event:reserve', {
+                _id : self._id(),
+                conId : self.conId(),
+                roomId : self.roomId()
+            });
+        };
+
+        self.stopDrag = function(ctx){
+            socket.emit('event:release', {
+                _id : self._id(),
+                conId : self.conId(),
+                roomId : self.roomId()
+            });
         };
 
         self.promptForEditEvent = function(){

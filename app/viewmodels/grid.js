@@ -3,10 +3,79 @@
 
     this.room_planner = this.room_planner || {};
 
-    room_planner.Grid = function(conventionId, startTime, endTime){
+    var getNextDay = function(date){
+        var next = new Date(date);
+        next.setDate(date.getDate()+1);
+        return next;
+    };
+
+    var getToday = function(){
+        var date = new Date();
+
+        date.setMinutes(0);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
+        date.setHours(0);
+
+        return date;
+    };
+
+    var normalizeDate = function(date){
+        var newDate = new Date(date);
+
+        newDate.setMinutes(0);
+        newDate.setSeconds(0);
+        newDate.setMilliseconds(0);
+        newDate.setHours(newDate.getHours());
+
+        return newDate;
+    };
+
+    var getEventTimeSpan = function(convention){
+        var startDate, endDate, i, z;
+        var start, end;
+        if(convention && convention.rooms){
+            for(i = 0; i < convention.rooms.length; i++){
+                var events = convention.rooms[i].events;
+
+                for(z = 0; z < events.length; z++){
+                    start = new Date(events[z].start);
+                    end = new Date(events[z].end);
+                    if(!startDate || startDate > start){
+                        startDate = start;
+                    }
+                    if(!endDate || endDate < end){
+                        endDate = end;
+                    }
+                }
+            }
+        }
+
+        startDate = startDate || getToday();
+        var nextDay = getNextDay(startDate);
+
+        if(!endDate || endDate < nextDay){
+            endDate = nextDay;
+        }
+
+        return {
+            start: normalizeDate(startDate),
+            end: normalizeDate(endDate)
+        }
+    };
+
+    var socket = room_planner.getSocket();
+
+    room_planner.Grid = function(convention){
         var self = this;
 
-        self.con_id = ko.observable(conventionId);
+        var startingDates = getEventTimeSpan(convention);
+
+        var conventionId = convention._id;
+        var startTime = startingDates.start;
+        var endTime = startingDates.end;
+
+        self._id = ko.observable(conventionId);
         self.chat = new room_planner.ChatClient(conventionId);
 
         self.startTime = ko.observable(startTime);
@@ -39,14 +108,32 @@
             return column.template;
         };
 
-        self.addRoom = function(name){
-            var room = new room_planner.Room(self, name);
+        self.addRoom = function(model){
+            var room = new room_planner.Room(self, model);
             self.columns.push(room);
             return room;
         };
 
         self.removeRoom = function(room){
             self.columns.remove(room);
+        };
+
+        self.findRoom = function(id){
+            return _.find(self.rooms(), function(room){ return room._id() == id });
+        };
+
+        self.findEvent = function(eventId){
+            var rooms = self.rooms();
+
+            for(var i = 0; i < rooms.length; i++){
+                var events = rooms[i].events();
+
+                for(var z = 0; z < events.length; z++){
+                    if(events[z]._id() == eventId){
+                        return events[z];
+                    }
+                }
+            }
         };
 
         //Computed Properties
@@ -67,12 +154,20 @@
         });
 
         //events
+        self.uiRemoveRoom = function(room){
+            self.removeRoom(room);
+
+            socket.emit('room:remove', ko.toJS(room));
+        };
+
         self.promptForNewRoom = function(){
             room_planner.modal.show({
                 viewModel: new room_planner.AddRoomViewModel(),
                 template: 'add-room-template'
             }).done(function(model) {
-                self.addRoom(model.name());
+                var json = ko.toJS(model);
+                var room = new room_planner.Room(self, json);
+                socket.emit('room:add', ko.toJS(room));
             }).fail(function() {
                 console.log("Modal cancelled");
             });
@@ -91,7 +186,10 @@
                 viewModel: new room_planner.AddEventViewModel(self, start, end, room),
                 template: 'add-event-template'
             }).done(function(model) {
-                model.room().addEvent(model.name(), model.start(), model.end());
+                var room = model.room();
+                //var event = room.addEvent(ko.toJS(model));
+                var event = new room_planner.Event(self, room, model);
+                socket.emit('event:add', ko.toJS(event));
             });
         };
     };

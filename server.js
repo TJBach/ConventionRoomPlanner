@@ -27,6 +27,8 @@ app.use(express.session({secret: '138a4226920b4b9dad0176f927675cb9'}));
 //set socket io routes
 app.io.route('chat', socketRoutes.chatRoutes);
 app.io.route('convention', socketRoutes.conventionRoutes);
+app.io.route('room', socketRoutes.roomRoutes);
+app.io.route('event', socketRoutes.eventRoutes);
 
 //set normal routes
 app.post('/convention/create', routes.createConvetion);

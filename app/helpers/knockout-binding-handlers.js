@@ -43,6 +43,11 @@ ko.bindingHandlers.draggable = {
                 if(value.koStart){
                     value.koStart(context);
                 }
+            },
+            stop: function(evt, ui) {
+                if(value.koStop){
+                    value.koStop(context);
+                }
             }
         };
 
@@ -83,7 +88,7 @@ ko.bindingHandlers.droppable = {
 
 //connect items with observableArrays
 ko.bindingHandlers.sortableList = {
-    init: function(element, valueAccessor) {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel, context) {
         var value = ko.utils.unwrapObservable(valueAccessor());
         var list = value.list || valueAccessor() || [];
 
@@ -105,6 +110,10 @@ ko.bindingHandlers.sortableList = {
                 //remove the item and add it back in the right spot
                 list.remove(item);
                 list.splice(position, 0, item);
+
+                if(value.kodrop){
+                    value.kodrop(item, position, list, context, event, ui);
+                }
             }
         };
 

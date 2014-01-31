@@ -7,6 +7,7 @@
 @pink:        #FF00FF;
 @gray:        #C0C0C0;
 @white:       #FFFFFF;
+@darkgray:     #696969;
 
 .bordered-colors(@lighten: 40%) {
   &.red{
@@ -46,6 +47,11 @@
 
   &.white{
     background-color: lighten(@white, @lighten);
+    border: 1px solid black;
+  }
+
+  &.black{
+    background-color: @darkgray;
     border: 1px solid black;
   }
 }

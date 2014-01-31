@@ -101,15 +101,22 @@
         }
     };
 
-    room_planner.Room = function(grid, name){
+    var socket = room_planner.getSocket();
+
+    room_planner.Room = function(grid, model){
         var self = this;
 
-        self.name = ko.observable(name);
-        self.description = ko.observable();
+        self._id = ko.observable(model._id);
+        self.conId = ko.observable(grid._id());
+
+        self.name = ko.observable(model.name);
+        self.description = ko.observable(model.description);
         self.events = ko.observableArray();
         self.rows = grid.rows;
         self.template = "room-template";
         self.creating = ko.observable(false);
+
+        self.reserve = ko.observable(false);
 
         self.visibleEvents = ko.dependentObservable(function(){
             return ko.utils.arrayFilter(self.events(), function(event) {
@@ -121,8 +128,10 @@
             setEventOverlap(self.events());
         });
 
-        self.addEvent = function(name, start, end, color){
-            self.events.push(new room_planner.Event(grid, name, start, end, color));
+        self.addEvent = function(model){
+            var event = new room_planner.Event(grid, self, model);
+            self.events.push(event);
+            return event;
         };
 
         self.removeEvent = function(event){
@@ -151,6 +160,17 @@
             }
         };
 
+        self.findEvent = function(id){
+            return _.find(self.events(), function(event){ return event._id() == id });
+        };
+
+        //
+        self.uiRemoveEvent = function(event){
+            self.removeEvent(event);
+
+            socket.emit('event:remove', ko.toJS(event));
+        };
+
         self.promptNewEvent = function(row){
             if(!eventCreation.started){
                 return;
@@ -164,7 +184,10 @@
                 viewModel: new room_planner.AddEventViewModel(grid, start, end, self),
                 template: 'add-event-template'
             }).done(function(model) {
-                model.room().addEvent(model.name(), model.start(), model.end(), model.color());
+                var room = model.room();
+                //var event = room.addEvent(ko.toJS(model));
+                var event = new room_planner.Event(grid, room, model);
+                socket.emit('event:add', ko.toJS(event));
             }).fail(function() {
                 console.log("Modal cancelled");
             }).always(function() {
@@ -203,6 +226,10 @@
             }
 
             self.events.push(event);
+
+            event.roomId(self._id());
+
+            socket.emit('event:update', ko.toJS(event));
         };
     };
 

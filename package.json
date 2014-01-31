@@ -21,9 +21,7 @@
     "grunt-preprocess": "~4.0.0",
     "grunt-env": "~0.4.0",
     "grunt-contrib-copy": "~0.4.1",
-    "underscore": "~1.5.2"
-  },
-  "dependencies": {
+    "underscore": "~1.5.2",
     "mustache": "~0.8.0",
     "express": "~3.4.7",
     "express.io": "~1.1.13",
@@ -31,5 +29,8 @@
     "consolidate": "~0.10.0",
     "html": "0.0.7",
     "mongojs": "~0.9.10"
+  },
+  "dependencies": {
+
   }
 }

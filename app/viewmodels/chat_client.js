@@ -16,13 +16,9 @@
 
         self.focusText = ko.observable();
 
-        self.collapsed = ko.observable(false);
-        self.newMessage = ko.observable(false);
-        self.flashState = ko.observable(false);
-
         var addMessage = function(msg, alias){
             self.chatLog.push({ message: msg, alias: alias});
-        }
+        };
 
         self.sendMessage = function(){
             var message = self.text();
