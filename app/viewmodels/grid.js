@@ -157,7 +157,11 @@
         self.uiRemoveRoom = function(room){
             self.removeRoom(room);
 
-            socket.emit('room:remove', ko.toJS(room));
+            socket.emit('room:remove', ko.toJS(room), function(response){
+                if(response.error){
+                    self.addRoom(room);
+                }
+            });
         };
 
         self.promptForNewRoom = function(){
@@ -167,7 +171,11 @@
             }).done(function(model) {
                 var json = ko.toJS(model);
                 var room = new room_planner.Room(self, json);
-                socket.emit('room:add', ko.toJS(room));
+                socket.emit('room:add', ko.toJS(room), function(response){
+                    if(!response.error){
+                        self.addRoom(response.room[0] || response.room);
+                    }
+                });
             }).fail(function() {
                 console.log("Modal cancelled");
             });
@@ -189,7 +197,11 @@
                 var room = model.room();
                 //var event = room.addEvent(ko.toJS(model));
                 var event = new room_planner.Event(self, room, model);
-                socket.emit('event:add', ko.toJS(event));
+                socket.emit('event:add', ko.toJS(event), function(response){
+                    if(!response.error){
+                        model.room().addEvent(response.event[0] || response.event);
+                    }
+                });
             });
         };
     };

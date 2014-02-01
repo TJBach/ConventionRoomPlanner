@@ -34,7 +34,7 @@
 
     <div class="container">
         <div class="add-convention">
-            <form action="/convention/create" method="post">
+            <form action="convention/create" method="post">
                 <input type="text" name="name">
                 <button type="submit" class="btn btn-primary">Add Convention</button>
             </form>
@@ -45,8 +45,8 @@
                 <ul>
                     {{#conventions}}
                     <li>
-                        <form class="delete-con" action="/convention/delete" method="post">
-                            <strong><a href="/convention/{{_id}}">{{name}}</a></strong>
+                        <form class="delete-con" action="convention/delete" method="post">
+                            <strong><a href="convention/{{_id}}">{{name}}</a></strong>
                             <button type="submit" class="btn">Remove</button>
                             <input type="hidden" name="id" value="{{_id}}">
                         </form>

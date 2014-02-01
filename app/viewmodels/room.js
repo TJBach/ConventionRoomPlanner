@@ -168,7 +168,11 @@
         self.uiRemoveEvent = function(event){
             self.removeEvent(event);
 
-            socket.emit('event:remove', ko.toJS(event));
+            socket.emit('event:remove', ko.toJS(event), function(response){
+                if(response.error){
+                    self.addEvent(event);
+                }
+            });
         };
 
         self.promptNewEvent = function(row){
@@ -187,7 +191,11 @@
                 var room = model.room();
                 //var event = room.addEvent(ko.toJS(model));
                 var event = new room_planner.Event(grid, room, model);
-                socket.emit('event:add', ko.toJS(event));
+                socket.emit('event:add', ko.toJS(event), function(response){
+                    if(!response.error){
+                        self.addEvent(response.event[0] || response.event);
+                    }
+                });
             }).fail(function() {
                 console.log("Modal cancelled");
             }).always(function() {
@@ -211,6 +219,7 @@
             var found = false;
             var current = 0;
             var cell;
+            var originalDate = event.start();
 
             while(!found && current < cells.length){
                 top = $(cells[current]).offset().top + (window.room_planner.cellHeight/2);
@@ -229,7 +238,15 @@
 
             event.roomId(self._id());
 
-            socket.emit('event:update', ko.toJS(event));
+            socket.emit('event:update', ko.toJS(event), function(response){
+                if(response.error){
+                    //Undo
+                    self.events.remove(event);
+                    oldRoom.events.push(event);
+                    event.roomId(oldRoom._id());
+                    event.rootTimeAt(originalDate);
+                }
+            });
         };
     };
 

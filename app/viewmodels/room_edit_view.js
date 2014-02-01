@@ -15,10 +15,17 @@
         self.confirmText = "Edit Room";
 
         self.add = function () {
+            var original = ko.toJS(room);
+
             room.name(self.name());
             room.description(self.description());
 
-            socket.emit('room:update', ko.toJS(room));
+            socket.emit('room:update', ko.toJS(room), function(response){
+                if(response.error){
+                    room.name(original.name);
+                    room.description(original.description);
+                }
+            });
 
             this.modal.close(self);
         };

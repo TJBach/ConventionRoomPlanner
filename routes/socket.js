@@ -11,18 +11,15 @@ var routes = function(app){
         setAlias: function(req) {
             var name = req.data;
 
-            var oldName = app.io.get('pseudo') || 'New user';
-            var viewedCons = app.io.get('conventions') || [];
+            var oldName = req.session.name || 'New user';
 
             if(name && name !== oldName){
-                app.io.set('pseudo', name);
+                req.session.name = name;
 
-                for(var i = 0; i < viewedCons.length; i++){
-                    req.io.room(viewedCons[i]).broadcast('chat:message', {
-                        message: '* ' + oldName + ' is now known as ' + name + '. *',
-                        pseudo : ''
-                    });
-                }
+                req.io.room(req.session.convention).broadcast('chat:message', {
+                    message: '* ' + oldName + ' is now known as ' + name + '. *',
+                    pseudo : ''
+                });
 
                 //update other windows you may have open.
                 req.io.emit('client:name', name);
@@ -34,7 +31,7 @@ var routes = function(app){
             var message = req.data.message;
             var convention = req.data.convention;
 
-            var name = app.io.get('pseudo');
+            var name = req.session.name;
 
             if(name && convention && message){
                 var data = { 'message' : message, pseudo : name };
@@ -52,7 +49,7 @@ var routes = function(app){
 
             req.io.join(conventionId);
 
-            var name = app.io.get('pseudo');
+            var name = req.session.name;
             var display = name || "New user";
 
             req.io.room(conventionId).broadcast('chat:message', {
@@ -65,8 +62,7 @@ var routes = function(app){
             }
 
             //track cons we are watching.
-            var cons =_.union((app.io.get('conventions') || []), [conventionId]);
-            app.io.set('conventions', cons);
+            req.session.convention = conventionId;
 
             console.log("user " + name + " joined " + conventionId);
         }
@@ -82,11 +78,12 @@ var routes = function(app){
             };
 
             db.rooms.insert(data, function(err, room) {
+                req.io.respond({ error: err, room: room });
                 if(err){
                     console.log("Adding room failed for " + req.data.name);
                 } else {
                     console.log("Adding room " + req.data.name);
-                    app.io.room(room.conId).broadcast('room:add', room);
+                    req.io.room(room.conId).broadcast('room:add', room);
                 }
             });
         },
@@ -103,6 +100,7 @@ var routes = function(app){
                 update: { $set: data },
                 new: true
             }, function(err, room) {
+                req.io.respond({ error: err, room: room });
                 if(err){
                     console.log("Updating room failed for " + req.data.name);
                 } else {
@@ -117,6 +115,7 @@ var routes = function(app){
                     console.log("Removing room failed for " + req.data.name);
                 } else {
                     console.log("Removing room " + req.data.name);
+                    req.io.respond({ error: err });
                     req.io.room(req.data.conId).broadcast('room:remove', {
                         _id : req.data._id,
                         conId : req.data.conId
@@ -130,7 +129,7 @@ var routes = function(app){
             req.io.room(req.data.conId).broadcast('room:reserve', {
                 _id : req.data._id,
                 conId : req.data.conId,
-                user : app.io.get('pseudo') || "anaynomous"
+                user : req.session.name || "anaynomous"
             });
         },
         release: function(req){
@@ -157,6 +156,7 @@ var routes = function(app){
             req.data.roomId = ObjectId(req.data.roomId);
 
             var data = {
+                conId: req.data.conId,
                 roomId: req.data.roomId,
                 name: req.data.name,
                 start: req.data.start,
@@ -165,11 +165,12 @@ var routes = function(app){
             };
 
             db.events.insert(data, function(err, event) {
+                req.io.respond({ error: err, event: event });
                 if(err){
                     console.log("Adding event failed for " + req.data.name);
                 } else {
                     console.log("Adding event " + req.data.name);
-                    app.io.room(event.conId).broadcast('event:add', event);
+                    req.io.room(event.conId).broadcast('event:add', event);
                 }
             });
         },
@@ -179,7 +180,6 @@ var routes = function(app){
             req.data.roomId = ObjectId(req.data.roomId);
 
             var data = {
-                conId: req.data.conId,
                 roomId: req.data.roomId,
                 name: req.data.name,
                 start: req.data.start,
@@ -192,6 +192,7 @@ var routes = function(app){
                 update: { $set: data },
                 new: true
             }, function(err, event) {
+                req.io.respond({ error: err, event: event });
                 if(err){
                     console.log("Updating event failed for " + req.data.name);
                 } else {
@@ -203,6 +204,7 @@ var routes = function(app){
         },
         remove: function(req){
             db.events.remove({ _id: ObjectId(req.data._id) }, function(err) {
+                req.io.respond({ error: err });
                 if( err ) {
                     console.log("Removing event failed for " + req.data.name);
                 } else {
@@ -221,7 +223,7 @@ var routes = function(app){
                 _id : req.data._id,
                 conId : req.data.conId,
                 roomId : req.data.roomId,
-                user : app.io.get('pseudo') || "anaynomous"
+                user : req.session.name || "anaynomous"
             });
         },
         release: releaseEvent

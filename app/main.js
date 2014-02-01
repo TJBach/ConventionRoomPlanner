@@ -32,7 +32,7 @@
 
     //room messages
     socket.on('room:add', function(data) {
-        planner.addRoom(data[0]);
+        planner.addRoom(data[0] || data);
     });
 
     socket.on('room:update', function(data) {
@@ -62,10 +62,10 @@
 
     //event messages
     socket.on('event:add', function(data) {
-        data = data[0];
-        var room = planner.findRoom(data.roomId);
+        var roomData = data[0] || data;
+        var room = planner.findRoom(roomData.roomId);
 
-        room.addEvent(data);
+        room.addEvent(roomData);
     });
 
     socket.on('event:update', function(data) {

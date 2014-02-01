@@ -36,15 +36,30 @@
         };
 
         self.add = function () {
+            var original = ko.toJS(event);
+
             event.name(self.name());
             event.start(self.start());
             event.end(self.end());
             event.color(self.color());
+            event.roomId(self.room()._id());
 
             room.events.remove(event);
             self.room().events.push(event);
 
-            socket.emit('event:update', ko.toJS(event));
+            socket.emit('event:update', ko.toJS(event), function(response){
+                if(response.error){
+                    //Undo
+                    event.name(original.name);
+                    event.start(original.start);
+                    event.end(original.end);
+                    event.color(original.color);
+                    event.roomId(original.roomId);
+
+                    self.room().events.remove(event);
+                    room.events.push(event);
+                }
+            });
 
             this.modal.close(self);
         };
